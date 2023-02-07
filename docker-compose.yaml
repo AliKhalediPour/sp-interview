@@ -1,4 +1,4 @@
-version: '2'
+version: "3.9"
 
 networks:
   SP_DEV:
@@ -7,19 +7,22 @@ networks:
 services:
   backend:
     build: ./backend
+    container_name: backend
     ports:
       - "5001:5001"
     depends_on:
       - redis
+
     restart: on-failure
     networks:
       - SP_DEV
 
   consumer:
     build: ./consumer
+    container_name: consumer
     depends_on:
-      - mysql
-      - redis
+      - mysql 
+
     restart: on-failure
     networks:
       - SP_DEV
@@ -27,6 +30,7 @@ services:
 
   redis:
     image: redis:7.0.8
+    container_name: redis
     ports:
       - "6379:6379"
     networks:
@@ -34,6 +38,7 @@ services:
 
   mysql:
     image: mysql/mysql-server:8.0 
+    container_name: mysql
     ports:
       - "3306:3306"
     environment:
