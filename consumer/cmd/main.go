@@ -5,8 +5,6 @@ import (
 
 	"encoding/json"
 
-	"fmt"
-
 	"github.com/rs/zerolog"
 
 	env "sp-consumer/internal/env"
@@ -31,23 +29,26 @@ var (
 )
 
 func processMessage(message string) {
+	l.Info().Msgf("message recieved from redis: %s\n", message)
+
 	// try to unmarshal recieved message to Order model
 	var order models.Order
 	err := json.Unmarshal([]byte(message), &order)
 
 	if err != nil {
-		fmt.Println("error:", err.Error())
+		l.Warn().Msgf("error:", err.Error())
 		return
 	}
-
-	fmt.Printf("new messge recieved:%+v\n", order)
 
 	// add order to database
 	err = db.OrderRepository.Add(&order)
 
 	if err != nil {
-		fmt.Println("error:", err.Error())
+		l.Warn().Msgf("error:", err.Error())
+		return
 	}
+
+	l.Info().Msgf("message added to mysql database")
 }
 
 func main() {
